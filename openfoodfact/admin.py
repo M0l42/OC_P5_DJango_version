@@ -19,6 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'nutrition_grade', 'category')
     search_fields = ('name', )
     list_filter = ['category']
+    filter_vertical = ['sub_category', 'store']
 
 
 @admin.register(Favorite)

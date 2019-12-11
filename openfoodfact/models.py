@@ -13,12 +13,18 @@ NUTRITION_GRADES = [
 
 class Store(models.Model):
     name = models.CharField(verbose_name='name', max_length=200)
-    slug = models.SlugField(verbose_name='slug', max_length=200)
+    slug = models.CharField(verbose_name='slug', max_length=200)
+
+    def __str__(self):
+        return self.name
 
 
 class Category(models.Model):
     name = models.CharField(verbose_name='name', max_length=200)
-    slug = models.SlugField(verbose_name='slug', max_length=200)
+    slug = models.CharField(verbose_name='slug', max_length=200)
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -40,8 +46,15 @@ class Product(models.Model):
         choices=NUTRITION_GRADES,
         default='',
     )
+    code = models.IntegerField(verbose_name="code", blank=True, default=0)
+
+    def __str__(self):
+        return self.name
 
 
 class Favorite(models.Model):
     product = models.ForeignKey('Product', related_name='product', on_delete=models.CASCADE)
     substitute = models.ForeignKey('Product', related_name='substitute', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.product.name
