@@ -1,9 +1,7 @@
 from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-
-from .views import ProductView
+from .views import ProductView, CategoryView
 
 urlpatterns = [
     path('product', ProductView.as_view(), name='product'),
+    path('category', CategoryView.as_view(), name='category'),
 ]

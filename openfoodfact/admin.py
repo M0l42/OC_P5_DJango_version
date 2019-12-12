@@ -10,7 +10,7 @@ class StoreAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
+    list_display = ('name', 'tags', 'numbers_of_product')
     search_fields = ('name', )
 
 

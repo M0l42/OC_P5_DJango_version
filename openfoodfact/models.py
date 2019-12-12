@@ -21,7 +21,9 @@ class Store(models.Model):
 
 class Category(models.Model):
     name = models.CharField(verbose_name='name', max_length=200)
-    slug = models.CharField(verbose_name='slug', max_length=200)
+    tags = models.CharField(verbose_name='tags', max_length=200)
+    url = models.CharField(verbose_name='url', max_length=200, blank=True)
+    numbers_of_product = models.IntegerField(verbose_name="products", default=0, null=True)
 
     def __str__(self):
         return self.name

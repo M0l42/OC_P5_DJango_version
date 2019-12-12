@@ -1,14 +1,46 @@
 from django.shortcuts import render
 from .models import Product, Category, Store, Favorite
-from .forms import ProductForm
+from .forms import ProductForm, CategoryForm
 from django.views.generic.edit import FormView
 import requests
+import json
 import os
+
+
+payload = {"action": "process",
+           "page_size": 50,
+           "json": 1}
+headers = {"user-agent": "python-app/0.0.1"}
+
+
+class CategoryView(FormView):
+    form_class = CategoryForm
+    template_name = "openfoodfact/form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoryView, self).get_context_data(**kwargs)
+        context['title'] = 'Load Product'
+        return context
+
+    def form_valid(self, form):
+        get_data = form.cleaned_data['get_data']
+        context = self.get_context_data()
+        if get_data:
+            r = requests.get('https://fr.openfoodfacts.org/categories', headers=headers, params=payload)
+            data = r.json()
+            for category in data['tags']:
+                name = category['name']
+                tag = category['id']
+                url = category['url']
+                numbers_of_product = category['products']
+                Category.objects.create(name=name, tags=tag, url=url, numbers_of_product=numbers_of_product)
+
+        return render(request=self.request, template_name=self.template_name, context=context)
 
 
 class ProductView(FormView):
     form_class = ProductForm
-    template_name = "openfoodfact/product_form.html"
+    template_name = "openfoodfact/form.html"
 
     def get_context_data(self, **kwargs):
         context = super(ProductView, self).get_context_data(**kwargs)
@@ -18,10 +50,6 @@ class ProductView(FormView):
     def form_valid(self, form):
         main_category = form.cleaned_data['category']
         context = self.get_context_data()
-        payload = {"action": "process",
-                   "page_size": 50,
-                   "json": 1}
-        headers = {"user-agent": "python-app/0.0.1"}
         url = 'https://fr.openfoodfacts.org/categorie/' + main_category.slug
         r = requests.get(url, headers=headers, params=payload)
         data = r.json()
@@ -40,8 +68,8 @@ class ProductView(FormView):
                 categories = product['categories'].split(",")
             categories_tag = product['categories_tags']
 
-            new_product =Product.objects.create(name=name, ingredients=ingredients,
-                                                nutrition_grade=nutrition_grade, category=main_category)
+            new_product = Product.objects.create(name=name, ingredients=ingredients,
+                                                 nutrition_grade=nutrition_grade, category=main_category)
 
             for store in stores:
                 try:
