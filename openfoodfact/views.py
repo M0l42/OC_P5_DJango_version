@@ -1,15 +1,16 @@
 from django.shortcuts import render
 from .models import Product, Category, Store, Favorite
 from .forms import ProductForm, CategoryForm
+from django.views.generic import ListView
 from django.views.generic.edit import FormView
 import requests
 import json
 import os
 
 
-payload = {"action": "process",
-           "page_size": 50,
-           "json": 1}
+# payload = {"action": "process",
+#            "page_size": 50,
+#            "json": 1}
 headers = {"user-agent": "python-app/0.0.1"}
 
 
@@ -49,8 +50,15 @@ class ProductView(FormView):
 
     def form_valid(self, form):
         main_category = form.cleaned_data['category']
+        payload = {"action": "process",
+                   "tagtype_0": "categories",
+                   "tag_contains_0": "contains",
+                   "tag_0": main_category.tags,
+                   "page_size": 50,
+                   "sort_by": "unique_scans_n",
+                   "json": 1}
         context = self.get_context_data()
-        url = 'https://fr.openfoodfacts.org/categorie/' + main_category.slug
+        url = "https://fr.openfoodfacts.org/cgi/search.pl?"
         r = requests.get(url, headers=headers, params=payload)
         data = r.json()
 
@@ -59,17 +67,24 @@ class ProductView(FormView):
         #     json.dump(data, file, indent=2)
 
         for product in data["products"]:
-            nutrition_grade = product['nutrition_grades']
-            ingredients = product['ingredients_text_fr']
-            name = product['product_name_fr']
+            try:
+                ingredients = product['ingredients_text_fr']
+            except KeyError:
+                ingredients = product['ingredients_text']
+            try:
+                name = product['product_name_fr']
+            except KeyError:
+                name = product['product_name']
             stores = product['stores'].split(", ")
-            categories = product['categories'].split(", ")
-            if len(categories) == 1:
-                categories = product['categories'].split(",")
-            categories_tag = product['categories_tags']
+            categories = product['categories_tags']
+            code = product['code']
+            try:
+                nutrition_grade = product['nutrition_grades']
+            except KeyError:
+                nutrition_grade = ''
 
             new_product = Product.objects.create(name=name, ingredients=ingredients,
-                                                 nutrition_grade=nutrition_grade, category=main_category)
+                                                 nutrition_grade=nutrition_grade, category=main_category, code=code)
 
             for store in stores:
                 try:
@@ -84,14 +99,25 @@ class ProductView(FormView):
                     new_product.store.add(product_store)
                     new_product.save()
 
-            for i, category in enumerate(categories):
-                try:
-                    product_category = Category.objects.get(slug=categories_tag[i])
-                except Category.DoesNotExist:
-                    product_category = Category.objects.create(name=category, slug=categories_tag[i])
-
-                if product_category.name != main_category.name:
-                    new_product.sub_category.add(product_category)
-                    new_product.save()
+            for category in categories:
+                product_category = Category.objects.get(tags=category)
+                new_product.sub_category.add(product_category)
+                new_product.save()
 
         return render(request=self.request, template_name=self.template_name, context=context)
+
+
+class ProductByCategoryView(ListView):
+    model = Product
+    template_name = 'openfoodfact/catalog.html'
+    paginate_by = 20
+    ordering = ['nutrition_grade']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Product'
+        return context
+
+    def get_queryset(self):
+        category = Category.objects.filter(tags=self.kwargs['slug'])
+        return Product.objects.filter(category=category[0])

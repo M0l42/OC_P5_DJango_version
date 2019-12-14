@@ -10,3 +10,7 @@ class ProductForm(forms.Form):
 
 class CategoryForm(forms.Form):
     get_data = forms.BooleanField(initial=True)
+
+
+class SubstituteForm(forms.Form):
+    category = Category.objects.exclude()
