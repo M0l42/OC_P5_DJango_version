@@ -135,7 +135,7 @@ class FindSubstituteView(ListView):
 
     def get_queryset(self):
         category = Category.objects.filter(tags=self.kwargs['slug'])
-        substitute = Product.objects.filter(category=category[0], nutrition_grade='a').order_by('nutrition_grade')
+        substitute = Product.objects.filter(category=category[0]).order_by('nutrition_grade')
         return substitute
 
 
