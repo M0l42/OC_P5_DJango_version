@@ -1,11 +1,5 @@
 from django.contrib import admin
-from .models import Store, Category, Product, Favorite
-
-
-@admin.register(Store)
-class StoreAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
-    search_fields = ('name', )
+from .models import Category, Product, Favorite
 
 
 @admin.register(Category)
@@ -19,7 +13,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'nutrition_grade', 'category')
     search_fields = ('name', )
     list_filter = ['category']
-    filter_vertical = ['sub_category', 'store']
 
 
 @admin.register(Favorite)

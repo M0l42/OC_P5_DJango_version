@@ -1,20 +1,32 @@
-"Pâtes à tartiner aux noisettes et au cacao",
-"pates-a-tartiner-aux-noisettes-et-au-cacao",
-
-"Pizzas royales",
-"pizzas-royales",
-
-"Crêpes sucrées",
-"crepes-sucrees",
-
-"Mousses au chocolat",
-"mousses-au-chocolat",
-
-"Poulets au curry",
-"poulets-au-curry",
-
-"Hamburgers",
-"hamburgers",
-
-"Bûches glacées",
-"buches-glacees",
+{
+  "tags": [
+    {
+      "id": "pates-a-tartiner-aux-noisettes-et-au-cacao",
+      "name": "Pâtes à tartiner aux noisettes et au cacao"
+    },
+    {
+      "id": "pizzas-royales",
+      "name": "Pizzas royales"
+    },
+    {
+      "id": "crepes-sucrees",
+      "name": "Crêpes sucrées"
+    },
+    {
+      "id": "mousses-au-chocolat",
+      "name": "Mousses au chocolat"
+    },
+    {
+      "id": "poulets-au-curry",
+      "name": "Poulets au curry"
+    },
+    {
+      "id": "hamburgers",
+      "name": "Hamburgers"
+    },
+    {
+      "id": "buches-glacees",
+      "name": "Bûches glacées"
+    }
+  ]
+}
