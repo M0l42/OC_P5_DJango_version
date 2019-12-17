@@ -44,12 +44,11 @@
                         <h4 class="font-weight-bold grey-text">
                             <strong>code : {{ object.product.code }}</strong>
                         </h4>
-                        <a href="" class="grey-text">
+                        <a href="{% url 'sort_favorite' object.category.tags %}" class="grey-text nav-link">
                             <h5>{{ object.product.category }}</h5>
                         </a>
                     </div>
-                {% endif %}
-                {% if object.product %}
+
                     <div id="{{ object.id }}_{{ object.substitute.id }}" style="width: 500px; height: 300px; overflow: auto">
                         <div style="float: left; width: 210px; height: 210px">
                             <img class="image"
@@ -62,7 +61,7 @@
                         <h4 class="font-weight-bold grey-text">
                             <strong>code : {{ object.substitute.code }}</strong>
                         </h4>
-                        <a href="" class="grey-text">
+                        <a href="{% url 'sort_favorite' object.category.tags %}" class="grey-text nav-link">
                             <h5>{{ object.substitute.category }}</h5>
                         </a>
                     </div>

@@ -36,14 +36,14 @@
                         <img class="image"
                              src={{ object.img_url }}>
                     </div>
-                    <h3><a target="_blank" href="{% url 'find_substitute' category=object.category.tags product=object.pk %}">{{object.name}}</a></h3>
+                    <h3><a class="nav-link" href="{% url 'find_substitute' category=object.category.tags product=object.pk %}">{{object.name}}</a></h3>
                     <h4 class="font-weight-bold blue-text">
                         <strong>grade : {{ object.nutrition_grade }}</strong>
                     </h4>
                     <h4 class="font-weight-bold grey-text">
                         <strong>code : {{ object.code }}</strong>
                     </h4>
-                    <a href="" class="grey-text">
+                    <a href="{% url 'sort_product' object.category.tags %}" class="grey-text">
                         <h5>{{ object.category }}</h5>
                     </a>
                 </div>
