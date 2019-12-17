@@ -1,10 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
-from urllib.parse import urlencode
+from django.shortcuts import render
 from .models import Product, Category, Favorite
 from .forms import ProductForm, CategoryForm
 from django.views.generic import ListView
-from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
 from django.views import View
 import requests
