@@ -5,10 +5,6 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"></script>
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark lighten-1 mt-3 mb-5">
         <!-- Navbar brand -->
@@ -36,7 +32,7 @@
                         <img class="image"
                              src={{ object.img_url }}>
                     </div>
-                    <h3><a target="_blank" href="{% url 'find_substitute' category=object.category.tags product=object.pk %}">{{object.name}}</a></h3>
+                    <h3><a target="_blank" href="{% url 'save_favorite' category=object.category.tags product=product.pk substitute=object.pk %}">{{object.name}}</a></h3>
                     <h4 class="font-weight-bold blue-text">
                         <strong>grade : {{ object.nutrition_grade }}</strong>
                     </h4>

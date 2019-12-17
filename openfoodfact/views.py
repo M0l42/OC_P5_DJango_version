@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from urllib.parse import urlencode
 from .models import Product, Category, Favorite
 from .forms import ProductForm, CategoryForm
 from django.views.generic import ListView
+from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView
+from django.views import View
 import requests
 import json
 import os
@@ -52,12 +56,12 @@ class CategoryView(FormView):
         return render(request=self.request, template_name=self.template_name, context=context)
 
 
-class ProductView(FormView):
+class ProductFormView(FormView):
     form_class = ProductForm
     template_name = "openfoodfact/form.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ProductView, self).get_context_data(**kwargs)
+        context = super(ProductFormView, self).get_context_data(**kwargs)
         context['title'] = 'Load Product'
         return context
 
@@ -107,7 +111,14 @@ class ProductView(FormView):
         return render(request=self.request, template_name=self.template_name, context=context)
 
 
-class ProductByCategoryView(ListView):
+class HomeView(View):
+    template_name = 'openfoodfact/home.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+
+class ProductView(ListView):
     model = Product
     template_name = 'openfoodfact/catalog.html'
     paginate_by = 20
@@ -118,24 +129,44 @@ class ProductByCategoryView(ListView):
         context['categories'] = Category.objects.all()
         return context
 
+
+class ProductByCategoryView(ProductView):
     def get_queryset(self):
-        category = Category.objects.filter(tags=self.kwargs['slug'])
+        category = Category.objects.filter(tags=self.kwargs['category'])
         return Product.objects.filter(category=category[0])
 
 
 class FindSubstituteView(ListView):
     model = Product
-    template_name = 'openfoodfact/catalog.html'
+    template_name = 'openfoodfact/substitute.html'
     paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Substitute'
+        context['product'] = Product.objects.get(pk=self.kwargs['product'])
         return context
 
     def get_queryset(self):
-        category = Category.objects.filter(tags=self.kwargs['slug'])
+        category = Category.objects.filter(tags=self.kwargs['category'])
         substitute = Product.objects.filter(category=category[0]).order_by('nutrition_grade')
+        return substitute
+
+
+class SaveSubstituteView(ListView):
+    model = Favorite
+    template_name = 'openfoodfact/save_favorite.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Save Favorite'
+        return context
+
+    def get_queryset(self):
+        category = Category.objects.get(tags=self.kwargs['category'])
+        product = Product.objects.get(pk=self.kwargs['product'])
+        substitute = Product.objects.get(pk=self.kwargs['substitute'])
+        Favorite.objects.create(category=category, product=product, substitute=substitute)
         return substitute
 
 
